@@ -1,7 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
+const MonthlyGoal = require('../models/MonthlyGoal');
 const { authMiddleware } = require('../middleware/authMiddleware');
+
+// Helper function to calculate allowance
+const calculateAllowance = async (userId) => {
+  const goal = await MonthlyGoal.findOne({ user: userId });
+  const expenses = await Expense.find({ user: userId });
+  const totalExpenses = expenses.reduce((acc, exp) => acc + exp.totalAmount, 0);
+
+  const remainingAllowance = goal ? goal.income - goal.savingGoal - totalExpenses : 0;
+  const weeklyAllowance = remainingAllowance / 4;
+  const predictedSavings = goal ? goal.savingGoal * 6 : 0;
+  const predictedSavingsAfterExpenses = predictedSavings - totalExpenses * 6;
+
+  return { totalExpenses, remainingAllowance, weeklyAllowance, predictedSavings, predictedSavingsAfterExpenses };
+};
 
 // Create a new expense
 router.post('/', authMiddleware, async (req, res) => {
@@ -25,7 +40,14 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
     await newExpense.save();
-    res.status(201).json({ message: 'Expense recorded successfully', expense: newExpense });
+
+    const allowance = await calculateAllowance(req.user.userId);
+
+    res.status(201).json({
+      message: 'Expense recorded successfully',
+      expense: newExpense,
+      ...allowance,
+    });
   } catch (error) {
     console.error('Error adding expense:', error);
     res.status(500).json({ message: 'Server error' });
@@ -36,7 +58,9 @@ router.post('/', authMiddleware, async (req, res) => {
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const expenses = await Expense.find({ user: req.user.userId }).populate('category', 'name icon');
-    res.json(expenses);
+    const allowance = await calculateAllowance(req.user.userId);
+
+    res.json({ expenses, ...allowance });
   } catch (error) {
     console.error('Error fetching expenses:', error);
     res.status(500).json({ message: 'Server error' });
@@ -58,7 +82,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     if (!updatedExpense) return res.status(404).json({ message: 'Expense not found' });
 
-    res.json({ message: 'Expense updated', expense: updatedExpense });
+    const allowance = await calculateAllowance(req.user.userId);
+
+    res.json({ message: 'Expense updated', expense: updatedExpense, ...allowance });
   } catch (error) {
     console.error('Error updating expense:', error);
     res.status(500).json({ message: 'Server error' });
@@ -75,7 +101,9 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     if (!deletedExpense) return res.status(404).json({ message: 'Expense not found' });
 
-    res.json({ message: 'Expense deleted' });
+    const allowance = await calculateAllowance(req.user.userId);
+
+    res.json({ message: 'Expense deleted', ...allowance });
   } catch (error) {
     console.error('Error deleting expense:', error);
     res.status(500).json({ message: 'Server error' });
@@ -92,7 +120,9 @@ router.patch('/:id/settle', authMiddleware, async (req, res) => {
     expense.isSettled = true;
     await expense.save();
 
-    res.json({ message: 'Expense marked as settled', expense });
+    const allowance = await calculateAllowance(req.user.userId);
+
+    res.json({ message: 'Expense marked as settled', expense, ...allowance });
   } catch (error) {
     console.error('Error marking expense as settled:', error);
     res.status(500).json({ message: 'Server error' });
