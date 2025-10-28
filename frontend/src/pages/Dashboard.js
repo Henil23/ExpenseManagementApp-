@@ -5,6 +5,7 @@ import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
 import DashboardCharts from '../components/DashboardCharts';
 import MonthlyGoalForm from '../components/MonthlyGoalForm';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
