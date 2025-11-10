@@ -1,10 +1,11 @@
-// src/pages/Dashboard.js
 import React, { useEffect, useState } from 'react';
 import API from '../services/api';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
 import DashboardCharts from '../components/DashboardCharts';
 import MonthlyGoalForm from '../components/MonthlyGoalForm';
+import PredictionDisplay from '../components/PredictionDisplay';
+
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -58,6 +59,9 @@ const Dashboard = () => {
           <p><strong>Predicted Savings (6 months):</strong> ${monthlyGoal.predictedSavingsAfterExpenses}</p>
         </div>
       )}
+
+      {/* Spending Prediction */}
+      {monthlyGoal && <PredictionDisplay monthlyGoal={monthlyGoal} />}
 
       {/* Add New Expense */}
       <ExpenseForm
