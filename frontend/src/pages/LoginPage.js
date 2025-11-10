@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+// src/pages/LoginPage.js
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import API from '../services/api';
 import './LoginPage.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -17,23 +21,26 @@ const LoginPage = () => {
 
     try {
       const res = await API.post('/users/login', { email, password });
-      localStorage.setItem('token', res.data.token); // save JWT token
-      setMessage(res.data.message);
-      setLoading(false);
+      const { token, user } = res.data;
 
-      // Redirect to dashboard
-      setTimeout(() => navigate('/dashboard'), 500);
+      // Save token + update global auth state
+      login(user, token);
+
+      setMessage('Login successful!');
+      setTimeout(() => navigate('/dashboard'), 600);
     } catch (error) {
       console.error(error);
       setMessage(error.response?.data?.message || 'Login failed');
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      <h2>Login to Your Account</h2>
+      <h2>Welcome Back</h2>
       {message && <p className="message">{message}</p>}
+
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Email</label>
@@ -45,6 +52,7 @@ const LoginPage = () => {
             placeholder="you@example.com"
           />
         </div>
+
         <div className="form-group">
           <label>Password</label>
           <input
@@ -55,12 +63,15 @@ const LoginPage = () => {
             placeholder="Enter your password"
           />
         </div>
+
         <button type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
+
       <p className="redirect-text">
-        Don't have an account? <span onClick={() => navigate('/register')}>Register</span>
+        Don’t have an account?{' '}
+        <span onClick={() => navigate('/register')}>Register</span>
       </p>
     </div>
   );
