@@ -1,25 +1,35 @@
 const express = require('express');
-const connectDB = require('./config/db');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
+const connectDB = require('./config/db');
 
-// Load environment variables
+// Load env
 dotenv.config();
 
+// Init App
 const app = express();
 
-// Connect to the database
-connectDB();
+// CORS config
+const corsOptions = {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-// Middleware for parsing JSON requests
+app.use(cors(corsOptions));
+
+// Body parser
 app.use(express.json());
 
-// Enable CORS (optional)
-app.use(cors());
+// DB connection
+connectDB();
 
-// Use user routes
-app.use('/api/users', userRoutes);
+// Routes
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/categories', require('./routes/categoryRoutes'));
+app.use('/api/expenses', require('./routes/expenseRoutes'));
+app.use('/api/goals', require('./routes/MonthlyGoalRoutes'));
 
 const PORT = process.env.PORT || 5000;
 

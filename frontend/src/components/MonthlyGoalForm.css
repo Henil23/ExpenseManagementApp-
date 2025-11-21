@@ -1,0 +1,71 @@
+.goal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  margin: 20px auto;
+  text-align: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.goal-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.goal-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.current-goal {
+  background: #f7f9fc;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.goal-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goal-card input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.goal-card input:focus {
+  border-color: #0077ff;
+  outline: none;
+}
+
+.goal-card button {
+  background-color: #0077ff;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.goal-card button:hover {
+  background-color: #005ed6;
+}
+
+.goal-message {
+  margin-top: 12px;
+  color: #0077ff;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
