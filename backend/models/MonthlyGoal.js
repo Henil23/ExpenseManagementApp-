@@ -1,24 +1,21 @@
 const mongoose = require('mongoose');
 
-const monthlyGoalSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    income: {
-        type: Number,
-        required: true,
-    },
-    savingsGoal: {
-        type: Number,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+const MonthlyGoalSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  income: {
+    type: Number,
+    required: true
+  },
+  savingGoal: {
+    type: Number,
+    required: true
+  }
+}, { timestamps: true });
 
-module.exports = mongoose.model('MonthlyGoal', monthlyGoalSchema);
-module.exports = monthlyGoal;
+const MonthlyGoal = mongoose.model('MonthlyGoal', MonthlyGoalSchema);
+
+module.exports = MonthlyGoal;
